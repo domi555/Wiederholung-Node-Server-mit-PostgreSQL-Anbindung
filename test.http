@@ -18,7 +18,7 @@ Content-Type: application/json
     "miles": 189921,
     "yearOfMake": 1978,
     "owner": {
-        "firstName": "Maxa",
+        "firstName": "Max",
         "lastName": "Blam"
     },
     "description": "Excellent condition. A trip back in time!"

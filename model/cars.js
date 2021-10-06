@@ -1,8 +1,17 @@
 const db = require('../db');
 
+// F: Wie viele Einträge gibt es bei cars und womit beginnt die Sequenz cars_id_seq?
+// Was wird also passieren, wenn du neue Autos mit INSERT in die Tabelle einfügst,
+// ohne eine id zu vergeben?
+// A: Da bereits 9 Datensätze durch das SQL-File eingefügt werden sind die Startwerte nicht korrekt
+// und müssen angepasst werden: siehe SQL-File
+
+// Zusätzlich ist ein eigener User "dominikpalatin" mit beschränkten Rechten anzulegen.
+// Der User muss CRUD-Rechte auf die Tabelle "cars" haben und SELECT/INSERT auf der Tabelle "owner".
+
 const getCars = async () => {
   const { rows } = await db.query(
-    'SELECT * FROM cars JOIN owner ON cars.owner = owner.id',
+    'SELECT cars.id, title, image, status, price, miles, year_of_make, description, first_name, last_name FROM cars JOIN owner ON cars.owner = owner.id',
   );
   return {
     code: 200,
@@ -29,8 +38,6 @@ const patchCar = async (id, status) => {
 };
 
 const postCar = async (car) => {
-  // START WITH 10, sonst würde er versuchen "id" mit dem Wert 1 zu beginnen
-
   const check = await db.query(
     'SELECT id FROM owner WHERE first_name = $1 AND last_name = $2',
     [car.owner.firstName, car.owner.lastName],
@@ -42,7 +49,7 @@ const postCar = async (car) => {
   } else {
     const owner = await db.query(
       'INSERT INTO owner(first_name, last_name) VALUES ($1, $2) RETURNING id',
-      [car.owner.first, car.owner.last],
+      [car.owner.firstName, car.owner.lastName],
     );
     ownerId = owner.rows[0].id;
   }
@@ -71,12 +78,12 @@ const deleteCar = async (id) => {
   const check = await db.query('SELECT 1 FROM cars WHERE id = $1', [id]);
   if (check.rows.length !== 0) {
     const { rows } = await db.query(
-      'DELETE FROM cars WHERE id = $1 RETURNING *',
+      'DELETE FROM cars WHERE id = $1 RETURNING id',
       [id],
     );
     return {
       code: 200,
-      data: `Deleted: (${rows[0]})`,
+      data: `Deleted: (${rows[0].id})`,
     };
   }
   return {
