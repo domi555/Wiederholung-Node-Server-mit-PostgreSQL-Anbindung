@@ -1,8 +1,27 @@
 GET http://localhost:3000/cars
 ###
-PATCH http://localhost:3000/cars
+PATCH http://localhost:3000/cars/1
 Content-Type: application/json
 
 {
     "title": "Rare Oldtimer"
 }
+###
+POST http://localhost:3000/cars
+Content-Type: application/json
+
+{
+    "title": "Rare Oldtimer",
+    "status": "available",
+    "price": "52300",
+    "image": "http://localhost:3000/images/car10.png",
+    "miles": 189921,
+    "yearOfMake": 1978,
+    "owner": {
+        "firstName": "Max",
+        "lastName": "Blam"
+    },
+    "description": "Excellent condition. A trip back in time!"
+}
+###
+DELETE http://localhost:3000/cars/2
