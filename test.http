@@ -4,7 +4,7 @@ PATCH http://localhost:3000/cars/1
 Content-Type: application/json
 
 {
-    "title": "Rare Oldtimer"
+    "status": "reserved"
 }
 ###
 POST http://localhost:3000/cars
@@ -18,10 +18,10 @@ Content-Type: application/json
     "miles": 189921,
     "yearOfMake": 1978,
     "owner": {
-        "firstName": "Max",
+        "firstName": "Maxa",
         "lastName": "Blam"
     },
     "description": "Excellent condition. A trip back in time!"
 }
 ###
-DELETE http://localhost:3000/cars/2
+DELETE http://localhost:3000/cars/1

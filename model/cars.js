@@ -9,17 +9,26 @@ const getCars = async () => {
 };
 
 const patchCar = async (id, status) => {
-  const { rows } = await db.query(
-    `UPDATE cars SET status = $1 WHERE id = ${id} RETURNING id, title`,
-    [status],
-  );
+  const check = await db.query('SELECT 1 FROM cars WHERE id = $1', [id]);
+  if (check.rows.length !== 0) {
+    const { rows } = await db.query(
+      `UPDATE cars SET status = $1 WHERE id = ${id} RETURNING id, status`,
+      [status],
+    );
+    return {
+      code: 200,
+      data: `Updated id: (${rows[0].id}) to status: (${rows[0].status})`,
+    };
+  }
   return {
-    code: 200,
-    data: rows[0].id,
+    code: 404,
+    data: `Not found: (${id})`,
   };
 };
 
 const postCar = async (car) => {
+  // START WITH 10, sonst würde er versuchen "id" mit dem Wert 1 zu beginnen
+
   const check = await db.query(
     'SELECT id FROM owner WHERE first_name = $1 AND last_name = $2',
     [car.owner.firstName, car.owner.lastName],
@@ -37,7 +46,7 @@ const postCar = async (car) => {
   }
 
   const { rows } = await db.query(
-    'INSERT INTO cars(id, title, image, status, price, miles, year_of_make, description, owner) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    'INSERT INTO cars(title, image, status, price, miles, year_of_make, description, owner) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
     [
       car.title,
       car.image,
@@ -65,12 +74,12 @@ const deleteCar = async (id) => {
     );
     return {
       code: 200,
-      data: rows[0],
+      data: `Deleted: (${rows[0]})`,
     };
   }
   return {
     code: 404,
-    data: 'Not found',
+    data: `Not found: (${id})`,
   };
 };
 
